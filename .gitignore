@@ -1,0 +1,24 @@
+# Terraform state + lock (never commit)
+*.tfstate
+*.tfstate.*
+.terraform/
+.terraform.lock.hcl
+crash.log
+crash.*.log
+
+# Secrets — only the .example file is tracked
+terraform.tfvars
+*.auto.tfvars
+*.pem
+*.key
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Build artefacts
+*.zip
+*.tar.gz
+dist/

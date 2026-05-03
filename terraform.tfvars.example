@@ -1,0 +1,13 @@
+# Copy to terraform.tfvars and fill in values. NEVER commit terraform.tfvars.
+
+project     = "frank-cloudprog"
+environment = "dev"
+aws_region  = "eu-central-1"
+
+# Database credentials — use AWS Secrets Manager or an env var in real deployments.
+db_username = "appadmin"
+db_password = "CHANGE_ME_before_apply"
+
+# Optional: set a domain_name you own (registered in Route 53) to wire up DNS.
+# domain_name = "example.com"
+enable_cloudfront = true

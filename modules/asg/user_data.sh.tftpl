@@ -1,0 +1,29 @@
+#!/bin/bash
+set -euxo pipefail
+
+# Web tier bootstrap — installs Apache and serves a simple page that includes
+# the instance's AZ. The ALB health check hits "/" on every instance.
+dnf -y update
+dnf -y install httpd
+systemctl enable --now httpd
+
+AZ=$(curl -s http://169.254.169.254/latest/meta-data/placement/availability-zone || echo "unknown-az")
+IID=$(curl -s http://169.254.169.254/latest/meta-data/instance-id           || echo "unknown-id")
+
+cat > /var/www/html/index.html <<HTML
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>${project} — ${environment}</title>
+<style>body{font-family:Arial,sans-serif;margin:3rem auto;max-width:640px;color:#1b1b1b}
+h1{color:#ff9900}code{background:#eee;padding:2px 6px;border-radius:3px}</style></head>
+<body>
+  <h1>Hello from ${project}</h1>
+  <p>This web tier is running on an EC2 instance behind an Application Load Balancer,
+     inside an Auto Scaling Group spanning two Availability Zones.</p>
+  <p><strong>Availability Zone:</strong> <code>$AZ</code><br>
+     <strong>Instance ID:</strong> <code>$IID</code></p>
+</body></html>
+HTML
+
+# Optional health-check endpoint distinct from "/" (not used but useful).
+echo "ok" > /var/www/html/health.html
