@@ -100,8 +100,8 @@ resource "aws_db_instance" "this" {
   final_snapshot_identifier   = "${var.name_prefix}-db-final"
   copy_tags_to_snapshot       = true
 
-  performance_insights_enabled = true
-  monitoring_interval          = 60
+  performance_insights_enabled = false
+  monitoring_interval          = 0
 
   tags = merge(var.tags, { Name = "${var.name_prefix}-db" })
 }

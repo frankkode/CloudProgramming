@@ -172,7 +172,7 @@ resource "aws_autoscaling_policy" "request_count_target" {
   target_tracking_configuration {
     predefined_metric_specification {
       predefined_metric_type = "ALBRequestCountPerTarget"
-      resource_label         = "${replace(var.target_group_arn, "/^.*:loadbalancer\\//", "")}"
+      resource_label         = "${var.alb_arn_suffix}/${var.target_group_arn_suffix}"
     }
     target_value = var.request_count_target
   }
