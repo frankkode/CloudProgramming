@@ -365,14 +365,14 @@ Both should return an empty array.
 | **Programme** | B.Sc. Software Engineering |
 | **Institution** | IU International University of Applied Sciences |
 | **Portfolio phase** | 2 — Development |
-| **Submission** | April 2026 |
+| **Submission** | 4 April 2026 |
 
 ### References
 
-- HashiCorp (2024). *Terraform CLI Documentation.* <https://developer.hashicorp.com/terraform/cli>
-- HashiCorp (2024). *Terraform AWS provider — official registry.* <https://registry.terraform.io/providers/hashicorp/aws/latest/docs>
-- AWS (2024). *AWS Well-Architected Framework.* <https://aws.amazon.com/architecture/well-architected/>
-- AWS (2024). *VPC security best practices.* <https://docs.aws.amazon.com/vpc/latest/userguide/vpc-security-best-practices.html>
-- AWS (2024). *Restricting access to an Amazon S3 origin (OAC).* <https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html>
-- AWS (2024). *AWS WAF — Managed rule groups.* <https://docs.aws.amazon.com/waf/latest/developerguide/aws-managed-rule-groups.html>
-- AWS (2024). *Amazon RDS Multi-AZ deployments.* <https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZ.html>
+- HashiCorp (2026). *Terraform CLI Documentation.* <https://developer.hashicorp.com/terraform/cli>
+- HashiCorp (2026). *Terraform AWS provider — official registry.* <https://registry.terraform.io/providers/hashicorp/aws/latest/docs>
+- AWS (2026). *AWS Well-Architected Framework.* <https://aws.amazon.com/architecture/well-architected/>
+- AWS (2026). *VPC security best practices.* <https://docs.aws.amazon.com/vpc/latest/userguide/vpc-security-best-practices.html>
+- AWS (2026). *Restricting access to an Amazon S3 origin (OAC).* <https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html>
+- AWS (2026). *AWS WAF — Managed rule groups.* <https://docs.aws.amazon.com/waf/latest/developerguide/aws-managed-rule-groups.html>
+- AWS (2026). *Amazon RDS Multi-AZ deployments.* <https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZ.html>
