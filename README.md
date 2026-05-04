@@ -362,7 +362,7 @@ Both should return an empty array.
 | **Author** | Frank Masabo |
 | **Matriculation** | 321147823 |
 | **Course** | Cloud Programming (DLBSEPCP01_E) |
-| **Programme** | B.Sc. Software Engineering |
+| **Programme** | B.Sc. Software Development |
 | **Institution** | IU International University of Applied Sciences |
 | **Portfolio phase** | 2 — Development |
 | **Submission** | 4 April 2026 |
