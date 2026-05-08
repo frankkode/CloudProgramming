@@ -8,8 +8,8 @@
 [![AWS Provider](https://img.shields.io/badge/AWS%20provider-~%3E%205.40-FF9900?logo=amazonaws&logoColor=white)](https://registry.terraform.io/providers/hashicorp/aws/latest/docs)
 [![Region](https://img.shields.io/badge/region-eu--central--1-232F3E?logo=amazonaws&logoColor=white)](https://aws.amazon.com/about-aws/global-infrastructure/regions_az/)
 [![Modules](https://img.shields.io/badge/modules-5-blue)]()
-[![Resources](https://img.shields.io/badge/resources-52-blue)]()
-[![Status](https://img.shields.io/badge/Phase%202-deployed-success)]()
+[![Resources](https://img.shields.io/badge/resources%20provisioned-52-blue)]()
+[![Status](https://img.shields.io/badge/Phase%202-submitted-success)]()
 
 </div>
 
