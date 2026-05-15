@@ -1,27 +1,28 @@
-name: Makefile CI
+name: Terraform CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
 
 jobs:
-  build:
-
+  validate:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: configure
-      run: ./configure
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "~1.6"
 
-    - name: Install dependencies
-      run: make
+      - name: Terraform Format Check
+        run: terraform fmt -check -recursive
 
-    - name: Run check
-      run: make check
+      - name: Terraform Init
+        run: terraform init -backend=false
 
-    - name: Run distcheck
-      run: make distcheck
+      - name: Terraform Validate
+        run: terraform validate
