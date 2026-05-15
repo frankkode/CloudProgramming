@@ -10,6 +10,7 @@
 [![Modules](https://img.shields.io/badge/modules-5-blue)]()
 [![Resources](https://img.shields.io/badge/resources%20provisioned-52-blue)]()
 [![Status](https://img.shields.io/badge/Phase%202-submitted-success)]()
+[![CI](https://img.shields.io/badge/CI-terraform%20fmt%20%2B%20validate-blueviolet?logo=githubactions&logoColor=white)](.github/workflows/terraform.yml)
 
 </div>
 
@@ -132,7 +133,7 @@ git --version
 
 ---
 
-## Quick start
+## Quick start (one-command workflow)
 
 ```bash
 # 1. Clone
@@ -146,18 +147,47 @@ $EDITOR terraform.tfvars      # set db_password (>= 8 chars)
 # 3. Configure AWS credentials
 aws configure                 # region = eu-central-1
 
-# 4. Deploy
-terraform init
-terraform apply               # type yes; ~15-20 minutes
+# 4. Deploy + smoke-test
+make apply                    # ~15-20 minutes
+make verify                   # confirms cross-AZ load balancing
 ```
 
-When `apply` finishes:
+When `make apply` finishes, the URLs print automatically. Open either in a browser and refresh — the page reports the Availability Zone of the instance that served the request.
+
+To tear everything down (handles RDS deletion-protection automatically):
 
 ```bash
-terraform output alb_url cloudfront_url
+make destroy
 ```
 
-Open either URL in a browser. The page prints the Availability Zone of the EC2 instance that served the request — refresh a few times to watch the load balancer alternate between zones.
+### All make targets
+
+```text
+$ make help
+  apply        Apply the most recent plan (~15-20 min)
+  check        Format then validate — what CI runs locally
+  ci-checks    What GitHub Actions runs on every push (no AWS access)
+  clean        Remove generated state-cache and plan files (keeps tfstate!)
+  destroy      Tear the entire stack down (handles RDS deletion protection)
+  fmt          Format all Terraform files in place
+  help         Show this help message
+  init         Run terraform init (downloads providers + modules)
+  outputs      Print public outputs (ALB URL, CloudFront URL)
+  plan         Generate a plan and save it to plan.tfplan
+  validate     Validate the configuration (no AWS calls)
+  verify       Smoke-test the live deployment (cross-AZ load balancing)
+```
+
+### Continuous integration
+
+Every push and pull request to `main` runs the GitHub Actions workflow at
+[`.github/workflows/terraform.yml`](.github/workflows/terraform.yml):
+
+* `terraform fmt -check -recursive` — fails the build on un-formatted code
+* `terraform init -backend=false` — confirms providers and modules resolve
+* `terraform validate` — runs against the root and against every module
+
+No AWS credentials are required for CI — these are pure static checks.
 
 ---
 
@@ -311,17 +341,25 @@ You will see a mix of `eu-central-1a` and `eu-central-1b` lines.
 
 ## Tearing it down
 
-This stack costs roughly **€4 per day** if left running (NAT Gateways and RDS dominate the bill). When you are done capturing screenshots, destroy everything:
+This stack costs roughly **€4 per day** if left running (NAT Gateways and RDS dominate the bill). When you are done capturing screenshots, destroy everything with one command:
 
 ```bash
-# 1. Disable RDS deletion protection (it is on by default for safety)
+make destroy
+```
+
+Under the hood this does two things:
+
+1. Disables RDS deletion protection (`aws rds modify-db-instance ... --no-deletion-protection`)
+2. Runs `terraform destroy -auto-approve`
+
+If you prefer to run it manually, the equivalent is:
+
+```bash
 aws rds modify-db-instance \
   --db-instance-identifier frank-cloudprog-dev-db \
-  --no-deletion-protection \
-  --apply-immediately \
+  --no-deletion-protection --apply-immediately \
   --region eu-central-1
 
-# 2. Tear it all down
 terraform destroy -auto-approve
 ```
 
@@ -362,17 +400,17 @@ Both should return an empty array.
 | **Author** | Frank Masabo |
 | **Matriculation** | 321147823 |
 | **Course** | Cloud Programming (DLBSEPCP01_E) |
-| **Programme** | B.Sc. Software Development |
+| **Programme** | B.Sc. Software Engineering |
 | **Institution** | IU International University of Applied Sciences |
 | **Portfolio phase** | 2 — Development |
-| **Submission** | 4 April 2026 |
+| **Submission** | April 2026 |
 
 ### References
 
-- HashiCorp (2026). *Terraform CLI Documentation.* <https://developer.hashicorp.com/terraform/cli>
-- HashiCorp (2026). *Terraform AWS provider — official registry.* <https://registry.terraform.io/providers/hashicorp/aws/latest/docs>
-- AWS (2026). *AWS Well-Architected Framework.* <https://aws.amazon.com/architecture/well-architected/>
-- AWS (2026). *VPC security best practices.* <https://docs.aws.amazon.com/vpc/latest/userguide/vpc-security-best-practices.html>
-- AWS (2026). *Restricting access to an Amazon S3 origin (OAC).* <https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html>
-- AWS (2026). *AWS WAF — Managed rule groups.* <https://docs.aws.amazon.com/waf/latest/developerguide/aws-managed-rule-groups.html>
-- AWS (2026). *Amazon RDS Multi-AZ deployments.* <https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZ.html>
+- HashiCorp (2024). *Terraform CLI Documentation.* <https://developer.hashicorp.com/terraform/cli>
+- HashiCorp (2024). *Terraform AWS provider — official registry.* <https://registry.terraform.io/providers/hashicorp/aws/latest/docs>
+- AWS (2024). *AWS Well-Architected Framework.* <https://aws.amazon.com/architecture/well-architected/>
+- AWS (2024). *VPC security best practices.* <https://docs.aws.amazon.com/vpc/latest/userguide/vpc-security-best-practices.html>
+- AWS (2024). *Restricting access to an Amazon S3 origin (OAC).* <https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html>
+- AWS (2024). *AWS WAF — Managed rule groups.* <https://docs.aws.amazon.com/waf/latest/developerguide/aws-managed-rule-groups.html>
+- AWS (2024). *Amazon RDS Multi-AZ deployments.* <https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZ.html>

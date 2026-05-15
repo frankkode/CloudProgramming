@@ -64,13 +64,3 @@ variable "tags" {
   type        = map(string)
   default     = {}
 }
-
-variable "alb_arn_suffix" {
-  description = "ARN suffix of the ALB."
-  type        = string
-}
-
-variable "target_group_arn_suffix" {
-  description = "ARN suffix of the target group."
-  type        = string
-}

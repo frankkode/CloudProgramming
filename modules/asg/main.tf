@@ -116,13 +116,13 @@ resource "aws_launch_template" "web" {
 
 # ---- Auto Scaling Group ---------------------------------------------------
 resource "aws_autoscaling_group" "web" {
-  name                = "${var.name_prefix}-asg"
-  min_size            = var.min_size
-  max_size            = var.max_size
-  desired_capacity    = var.desired_capacity
-  vpc_zone_identifier = var.private_app_subnet_ids
-  target_group_arns   = [var.target_group_arn]
-  health_check_type   = "ELB"
+  name                      = "${var.name_prefix}-asg"
+  min_size                  = var.min_size
+  max_size                  = var.max_size
+  desired_capacity          = var.desired_capacity
+  vpc_zone_identifier       = var.private_app_subnet_ids
+  target_group_arns         = [var.target_group_arn]
+  health_check_type         = "ELB"
   health_check_grace_period = 120
 
   launch_template {
@@ -172,7 +172,7 @@ resource "aws_autoscaling_policy" "request_count_target" {
   target_tracking_configuration {
     predefined_metric_specification {
       predefined_metric_type = "ALBRequestCountPerTarget"
-      resource_label         = "${var.alb_arn_suffix}/${var.target_group_arn_suffix}"
+      resource_label         = replace(var.target_group_arn, "/^.*:loadbalancer\\//", "")
     }
     target_value = var.request_count_target
   }

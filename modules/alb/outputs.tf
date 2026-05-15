@@ -22,13 +22,3 @@ output "target_group_arn" {
   description = "ARN of the target group the ASG registers instances with."
   value       = aws_lb_target_group.web.arn
 }
-
-output "alb_arn_suffix" {
-  description = "ARN suffix of the ALB (used in CloudWatch resource labels)."
-  value       = aws_lb.this.arn_suffix
-}
-
-output "target_group_arn_suffix" {
-  description = "ARN suffix of the target group (used in CloudWatch resource labels)."
-  value       = aws_lb_target_group.web.arn_suffix
-}

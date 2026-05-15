@@ -47,9 +47,7 @@ module "asg" {
   vpc_id                 = module.network.vpc_id
   private_app_subnet_ids = module.network.private_app_subnet_ids
   alb_security_group_id  = module.alb.alb_security_group_id
-  target_group_arn        = module.alb.target_group_arn
-  alb_arn_suffix          = module.alb.alb_arn_suffix
-  target_group_arn_suffix = module.alb.target_group_arn_suffix
+  target_group_arn       = module.alb.target_group_arn
   instance_type          = var.instance_type
   min_size               = var.asg_min_size
   max_size               = var.asg_max_size

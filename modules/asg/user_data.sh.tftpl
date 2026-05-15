@@ -1,162 +1,28 @@
 #!/bin/bash
 set -euxo pipefail
 
-# Web tier bootstrap — installs Apache and serves a styled landing page that
-# displays the serving Availability Zone and Instance ID, so a browser refresh
-# visibly demonstrates ALB cross-AZ load balancing.
+# Web tier bootstrap — installs Apache and serves a simple page that includes
+# the instance's AZ. The ALB health check hits "/" on every instance.
 dnf -y update
 dnf -y install httpd
 systemctl enable --now httpd
 
-# IMDSv2 is enforced on the launch template, so a session token is required.
-TOKEN=$(curl -s -X PUT "http://169.254.169.254/latest/api/token" \
-  -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")
-
-AZ=$(curl -s -H "X-aws-ec2-metadata-token: $TOKEN" \
-  http://169.254.169.254/latest/meta-data/placement/availability-zone || echo "unknown-az")
-IID=$(curl -s -H "X-aws-ec2-metadata-token: $TOKEN" \
-  http://169.254.169.254/latest/meta-data/instance-id || echo "unknown-id")
-REGION=$(curl -s -H "X-aws-ec2-metadata-token: $TOKEN" \
-  http://169.254.169.254/latest/meta-data/placement/region || echo "unknown-region")
+AZ=$(curl -s http://169.254.169.254/latest/meta-data/placement/availability-zone || echo "unknown-az")
+IID=$(curl -s http://169.254.169.254/latest/meta-data/instance-id           || echo "unknown-id")
 
 cat > /var/www/html/index.html <<HTML
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Hosting a Highly Available Web App on AWS</title>
-  <style>
-    *,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-           color: #1a1a1a; line-height: 1.6; background: #fafafa; }
-
-    nav { background: #1a1a1a; color: #fff; padding: 1rem 2rem;
-          display: flex; justify-content: space-between; align-items: center;
-          position: sticky; top: 0; z-index: 10; }
-    nav .brand { font-weight: 600; font-size: 1.05rem; letter-spacing: 0.5px; }
-    nav ul { display: flex; gap: 2rem; list-style: none; }
-    nav a { color: #fff; text-decoration: none; font-size: 0.95rem; opacity: 0.85; transition: opacity 0.2s; }
-    nav a:hover { opacity: 1; }
-
-    main { max-width: 960px; margin: 0 auto; padding: 0 2rem; background: #fff;
-           min-height: calc(100vh - 4rem); }
-
-    .hero { padding: 4rem 0 3rem; border-bottom: 1px solid #eaeaea; }
-    .hero h1 { font-size: 2.6rem; margin-bottom: 1rem; color: #1a1a1a; line-height: 1.15; letter-spacing: -0.5px; }
-    .hero .lead { color: #555; font-size: 1.15rem; max-width: 640px; }
-
-    .badge-row { margin-top: 1.75rem; display: flex; flex-wrap: wrap; gap: 0.5rem; }
-    .badge { display: inline-block; background: #f0f4f8; color: #1f4e79;
-             padding: 0.5rem 1rem; border-radius: 4px; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-             font-size: 0.9rem; border: 1px solid #d9e2ec; }
-
-    section { padding: 2.5rem 0; border-bottom: 1px solid #eaeaea; }
-    section:last-of-type { border-bottom: none; }
-    section h2 { font-size: 1.6rem; margin-bottom: 1rem; color: #1a1a1a; }
-    section p { color: #333; margin-bottom: 1rem; max-width: 720px; }
-
-    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 1rem; margin-top: 1.25rem; }
-    .card { padding: 1.25rem; background: #f8f9fa; border-radius: 6px;
-            border-left: 3px solid #1f4e79; }
-    .card h3 { font-size: 1rem; margin-bottom: 0.4rem; color: #1a1a1a; }
-    .card p { font-size: 0.9rem; color: #555; margin: 0; }
-
-    .req-table { width: 100%; max-width: 640px; border-collapse: collapse; margin-top: 1rem; }
-    .req-table th { text-align: left; padding: 0.6rem 0.8rem; background: #f8f9fa;
-                    border-bottom: 2px solid #eaeaea; font-size: 0.85rem; color: #555;
-                    text-transform: uppercase; letter-spacing: 0.5px; }
-    .req-table td { padding: 0.7rem 0.8rem; border-bottom: 1px solid #eaeaea;
-                    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-                    font-size: 0.95rem; }
-
-    footer { background: #1a1a1a; color: #aaa; padding: 2rem; text-align: center;
-             font-size: 0.9rem; }
-    footer p { margin: 0.3rem 0; }
-    footer a { color: #99c5ff; text-decoration: none; }
-    footer a:hover { text-decoration: underline; }
-
-    @media (max-width: 600px) {
-      nav { padding: 1rem; }
-      nav ul { gap: 1rem; font-size: 0.85rem; }
-      .hero h1 { font-size: 2rem; }
-      main { padding: 0 1.25rem; }
-    }
-  </style>
-</head>
+<head><meta charset="utf-8"><title>${project} — ${environment}</title>
+<style>body{font-family:Arial,sans-serif;margin:3rem auto;max-width:640px;color:#1b1b1b}
+h1{color:#ff9900}code{background:#eee;padding:2px 6px;border-radius:3px}</style></head>
 <body>
-  <nav>
-    <span class="brand">${project} · ${environment}</span>
-    <ul>
-      <li><a href="#home">Home</a></li>
-      <li><a href="#architecture">Architecture</a></li>
-      <li><a href="#status">Request</a></li>
-    </ul>
-  </nav>
-
-  <main>
-    <section id="home" class="hero">
-      <h1>Hello from ${project}</h1>
-      <p class="lead">A highly available three-tier web application running on Amazon Web Services,
-         provisioned end-to-end with Terraform Infrastructure as Code.</p>
-      <div class="badge-row">
-        <span class="badge">AZ &middot; $AZ</span>
-        <span class="badge">Instance &middot; $IID</span>
-        <span class="badge">Region &middot; $REGION</span>
-      </div>
-    </section>
-
-    <section id="architecture">
-      <h2>Architecture</h2>
-      <p>This page is served by an Apache web server on Amazon EC2 inside an Auto Scaling Group
-         deployed across two Availability Zones. The Application Load Balancer in front spreads
-         traffic across both zones &mdash; reload the page and the badge above may switch to the
-         other AZ.</p>
-      <div class="grid">
-        <div class="card">
-          <h3>Edge layer</h3>
-          <p>Amazon CloudFront with AWS WAF, terminating TLS at the global edge.</p>
-        </div>
-        <div class="card">
-          <h3>Compute</h3>
-          <p>EC2 Auto Scaling Group with target-tracking on CPU and ALB requests-per-target.</p>
-        </div>
-        <div class="card">
-          <h3>Data</h3>
-          <p>Amazon RDS for MySQL in Multi-AZ mode with KMS encryption at rest.</p>
-        </div>
-        <div class="card">
-          <h3>Network</h3>
-          <p>VPC with public, private application and private data subnets across two AZs.</p>
-        </div>
-      </div>
-    </section>
-
-    <section id="status">
-      <h2>Request details</h2>
-      <p>This response was served by the following EC2 instance. If you reload this page,
-         the load balancer may route your request to a different instance in the other zone.</p>
-      <table class="req-table">
-        <thead>
-          <tr><th>Field</th><th>Value</th></tr>
-        </thead>
-        <tbody>
-          <tr><td>Availability Zone</td><td>$AZ</td></tr>
-          <tr><td>Instance ID</td><td>$IID</td></tr>
-          <tr><td>Region</td><td>$REGION</td></tr>
-        </tbody>
-      </table>
-    </section>
-  </main>
-
-  <footer>
-    <p>Cloud Programming (DLBSEPCP01_E) &mdash; Portfolio Part 2</p>
-    <p>Frank Masabo &middot; Matriculation No. 321147823</p>
-    <p style="margin-top: 0.6rem">Source &middot; <a href="https://github.com/frankkode/CloudProgramming">github.com/frankkode/CloudProgramming</a></p>
-  </footer>
-</body>
-</html>
+  <h1>Hello from ${project}</h1>
+  <p>This web tier is running on an EC2 instance behind an Application Load Balancer,
+     inside an Auto Scaling Group spanning two Availability Zones.</p>
+  <p><strong>Availability Zone:</strong> <code>$AZ</code><br>
+     <strong>Instance ID:</strong> <code>$IID</code></p>
+</body></html>
 HTML
 
 # Optional health-check endpoint distinct from "/" (not used but useful).
