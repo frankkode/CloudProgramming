@@ -16,7 +16,7 @@
 
 A complete reference deployment of a three-tier web application on AWS, built with Terraform Infrastructure as Code. The stack survives the loss of a whole Availability Zone, scales the compute tier on its own, and serves traffic globally through CloudFront with WAF in front. Every resource is declared in code; one `terraform apply` brings the whole thing up.
 
-This repository is the **Phase 2 deliverable** and **Phase 3 Finalization **of the *Cloud Programming (DLBSEPCP01_E)* portfolio at the IU International University of Applied Sciences.
+This repository is the **Phase 2 deliverable** and **Phase 3 Finalization** of the *Cloud Programming (DLBSEPCP01_E)* portfolio at the IU International University of Applied Sciences.
 
 ---
 
