@@ -402,7 +402,7 @@ Both should return an empty array.
 | **Course** | Cloud Programming (DLBSEPCP01_E) |
 | **Programme** | B.Sc. Software Development |
 | **Institution** | IU International University of Applied Sciences |
-| **Portfolio phase** | 2 — Development |
+| **Portfolio phase** | 2 — Development & **phase** | 3 - Finalisation |
 | **Submission** | April 2026 |
 
 ### References
